@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/umjammer/jbinhex.svg)](https://jitpack.io/#umjammer/jbinhex)
+
 # JBinHex
 
 JBinHex is both a library and a command-line tool to decode files in
