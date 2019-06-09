@@ -19,9 +19,12 @@
 
 package org.gjt.convert.binhex;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
  Command line program to decode binhex files from the harddisk or from
@@ -73,7 +76,7 @@ public class DeBinHex
         if(inFile != null)
             binhexIn = new FileInputStream(inFile);
         else 
-		{
+        {
             String urlString = findValueOption("-u", args);
             if(urlString != null)
             {
@@ -116,8 +119,8 @@ public class DeBinHex
                     return args[i+1];
                 else
                     throw new RuntimeException(
-					        "Cannot use option that needs an argument "
-							+ "as the last option");
+                            "Cannot use option that needs an argument "
+                            + "as the last option");
             }
         }
         return null;
@@ -134,9 +137,9 @@ public class DeBinHex
     }
 
     public static void action(
-	        InputStream binhexIn, boolean justHeader,
-	        boolean doData, String dataOut,
-			boolean doResource, String resourceOut) throws IOException
+            InputStream binhexIn, boolean justHeader,
+            boolean doData, String dataOut,
+            boolean doResource, String resourceOut) throws IOException
     {
         BinHex4InputStream binhex;
 
@@ -144,6 +147,7 @@ public class DeBinHex
         if(justHeader)
         {
             System.out.println(binhex.getHeader());
+            binhex.close();
             return;
         }
 

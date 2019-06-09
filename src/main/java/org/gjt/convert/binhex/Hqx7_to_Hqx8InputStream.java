@@ -19,8 +19,10 @@
 
 package org.gjt.convert.binhex;
 
-import java.util.*;
-import java.io.*;
+import java.io.EOFException;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  Converts a 7-bit encoded binhex4.0 data stream to a 8-bit encoded
@@ -39,7 +41,7 @@ import java.io.*;
 public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
 
     final static String validChars
-	    = "!\"#$%&'()*+,-012345689@ABCDEFGHIJKLMNPQRSTUVXYZ[`"
+        = "!\"#$%&'()*+,-012345689@ABCDEFGHIJKLMNPQRSTUVXYZ[`"
         + "abcdefhijklmpqr";
 
     final static String binhexHeaderId = "(This file must be converted with BinHex";
@@ -68,8 +70,8 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
         // string. This whole class wouldn't work if they had.
         if(validChars.length() != 64)
             throw new IllegalStateException(
-			        "Incorrect class, the static validChars entry should "
-					+ "be 64 characters long.");
+                    "Incorrect class, the static validChars entry should "
+                    + "be 64 characters long.");
         for(int i = 0; i < sixBitTable.length; i++)
         {
             // 64 is the 'invalid character' value
@@ -166,7 +168,7 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
 // Debug line
 //            System.err.print((char)streamBuffer[sbIndex]);
             // Take care to return no sign-extended numbers, hence the & 0xff
-            return ((int)streamBuffer[sbIndex++]) & 0xff;
+            return (streamBuffer[sbIndex++]) & 0xff;
         }
 
         sbFilled = super.read(streamBuffer, 0, streamBuffer.length);
@@ -182,7 +184,7 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
 // Debug line
 //        System.err.print((char)streamBuffer[sbIndex]);
         // Take care to return no sign-extended numbers, hence the & 0xff
-        return ((int)streamBuffer[sbIndex++]) & 0xff;
+        return (streamBuffer[sbIndex++]) & 0xff;
     }
 
     private int next6bits() throws IOException
@@ -190,7 +192,7 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
         if(hardEOF)
             throw new EOFException(
                     "All Hqx7 data was read and a soft EOF was already "
-					+ "reported with a -1 return to read().");
+                    + "reported with a -1 return to read().");
 
         int b;
         do {
@@ -199,14 +201,14 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
             // with a : character.
             if(b == -1)
                 throw new EOFException(
-				        "EOF reached before closing : character. "
-						+ "Possible data corruption.");
+                        "EOF reached before closing : character. "
+                        + "Possible data corruption.");
 
             // The high bit could have been used as a parity bit. Better be sure.
             b &= 0x7f;
 
             // The : character terminates the stream
-			if(b == ':') {
+            if(b == ':') {
                 hardEOF = true;
                 return -1;
             }
@@ -216,8 +218,8 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
         int v = sixBitTable[b];
         if(v == invalidEntry)
             throw new IOException(
-			        "Illegal character in Hqx7 stream encountered, "
-					+ "possible data corruption. ('" + (char)b + "')");
+                    "Illegal character in Hqx7 stream encountered, "
+                    + "possible data corruption. ('" + (char)b + "')");
         return v;
     }
 
@@ -299,8 +301,7 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
 
     public static void main(String[] args)
     {
-        try {
-            InputStream in = new Hqx7_to_Hqx8InputStream(System.in);
+        try (InputStream in = new Hqx7_to_Hqx8InputStream(System.in)) {
             byte[] buf = new byte[1024];
 
             System.err.println("Starting to convert");
@@ -312,7 +313,7 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
                 System.out.write(buf, 0, r);
             }
         } catch(IOException e)
-		{
+        {
             e.printStackTrace();
         }
     }

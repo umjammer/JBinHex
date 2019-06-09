@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>klomp.org</groupId>
+  <artifactId>jbinhex</artifactId>
+  <version>0.0.6</version>
+
+  <url>http://www.klomp.org/JBinHex/JBinHex.html</url>
+  <name>JBinHex</name>
+  <description>both a library and a command-line tool to decode files in the Apple Macintosh BinHex 4.0 format.
+
+0.0.6
+
+    mavenize
+    fix some resource leaks</description>
+  <scm>
+    <url>https://github.com/umjammer/JBinHex</url>
+  </scm>
+  <issueManagement>
+    <url>https://github.com/umjammer/JBinHex/issues</url>
+  </issueManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

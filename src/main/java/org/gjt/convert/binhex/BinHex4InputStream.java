@@ -19,8 +19,9 @@
 
 package org.gjt.convert.binhex;
 
-import java.util.*;
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  This class completely decodes a BinHex4 file in three parts: the header,
@@ -54,14 +55,14 @@ public class BinHex4InputStream extends InputStream {
     {
         /**
          The name that this file had before encoding in BinHex4. The bytes
-		 represent characters in the Macintosh character set.
+         represent characters in the Macintosh character set.
          */
         byte[]  fileName;
 
         /**
          The version of this file. Usually 0. This is a special feature of
          the Macintosh file system that is, to my knowledge, infrequently
-		 used.
+         used.
          */
         int     version;
 
@@ -218,7 +219,7 @@ public class BinHex4InputStream extends InputStream {
 
     /**
      Constructs a BinHex4InputStream from a stream that is a source of 7-bit
-	 Hqx7 encoded data. This is the typical use for files fetched from the
+     Hqx7 encoded data. This is the typical use for files fetched from the
      Internet or through e-mail.
      */
     public BinHex4InputStream(InputStream source)
@@ -228,7 +229,7 @@ public class BinHex4InputStream extends InputStream {
 
     /**
      Constructs a BinHex4InputStream from a stream that is either a source
-	 of 7-bit Hqx7 encoded data or of pure 8-bit data in Hqx8 format. The
+     of 7-bit Hqx7 encoded data or of pure 8-bit data in Hqx8 format. The
      flag eightBit tells this class what to expect.
 
      @param source
@@ -262,7 +263,7 @@ public class BinHex4InputStream extends InputStream {
             checkDataCRC();
             switchState(stateInDataFork);
         } catch(IOException e)
-		{
+        {
             switchState(stateError);
             throw e;
         }
@@ -272,7 +273,7 @@ public class BinHex4InputStream extends InputStream {
     {
         if((header == null && newState != stateError) || streamState == stateError)
             throw new IllegalStateException(
-			        "Cannot switch state with header == null or in errorState");
+                    "Cannot switch state with header == null or in errorState");
 
         if(newState == stateInDataFork)
         {
@@ -281,7 +282,7 @@ public class BinHex4InputStream extends InputStream {
             hardEndOfFork = false;
             seenEndOfFork = false;
         }
-		else if(newState == stateInResourceFork)
+        else if(newState == stateInResourceFork)
         {
             bytesLeftInFork = header.resourceLength;
             hqxIn.resetCRC();
@@ -304,16 +305,16 @@ public class BinHex4InputStream extends InputStream {
             readHeader();
         else if(streamState == stateInResourceFork)
             throw new IOException(
-			        "Sorry, no random access. Cannot switch back from "
-					+ "resource to data fork.");
+                    "Sorry, no random access. Cannot switch back from "
+                    + "resource to data fork.");
         else if(streamState != stateInDataFork)
             throw new IllegalStateException("Stream is in unknown state.");
     }
 
     /**
      Swtich to reading from the resource fork.  All methods derived from 
-	 InputStream will apply to the resource fork. This method cannot be
-	 called after any method has thrown an IOException.
+     InputStream will apply to the resource fork. This method cannot be
+     called after any method has thrown an IOException.
      */
     public void useResourceFork() throws IOException
     {
@@ -419,7 +420,7 @@ public class BinHex4InputStream extends InputStream {
             throw new IOException("Incorrect CRC (calculated:"+calculatedCRC+" != file:"+readCRC+")");
     }
 
-	private void skipToEndOfFork() throws IOException
+    private void skipToEndOfFork() throws IOException
     {
         skip(bytesLeftInFork);
     }
@@ -450,8 +451,7 @@ public class BinHex4InputStream extends InputStream {
 
     public static void main(String[] args)
     {
-        try {
-            BinHex4InputStream in = new BinHex4InputStream(System.in);
+        try (BinHex4InputStream in = new BinHex4InputStream(System.in)) {
             System.err.println(in.getHeader());
 
             byte[] buf = new byte[1024];
@@ -465,7 +465,7 @@ public class BinHex4InputStream extends InputStream {
                 System.out.write(buf, 0, r);
             }
         } catch(IOException e)
-		{
+        {
             e.printStackTrace();
         }
     }

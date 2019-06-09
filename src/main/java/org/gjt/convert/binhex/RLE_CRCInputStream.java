@@ -19,8 +19,10 @@
 
 package org.gjt.convert.binhex;
 
-import java.util.*;
-import java.io.*;
+import java.io.EOFException;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  Decodes Run-length encoding LE from a 8-bit BinHex stream and calculates
@@ -45,7 +47,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
 
     /**
      Constructs a RLE_CRCInputStream from a stream that is a source of 7-bit
-	 Hqx7 encoded data. This is the typical use for files fetched from the
+     Hqx7 encoded data. This is the typical use for files fetched from the
      Internet or through e-mail. Internally, a Hqx7_to_Hqx8InputStream is
      created to translate from 7-bit to 8-bit format before passing the data
      through this stream.
@@ -57,7 +59,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
 
     /**
      Constructs a RLE_CRCInputStream from a stream that is either a source
-	 of 7-bit Hqx7 encoded data or of pure 8-bit data in Hqx8 format. The
+     of 7-bit Hqx7 encoded data or of pure 8-bit data in Hqx8 format. The
      flag eightBit tells this class what to expect.
 
      @param source
@@ -88,7 +90,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
 
         if(sbIndex < sbFilled)
             // Take care to return no sign-extended numbers, hence the & 0xff
-            return ((int)streamBuffer[sbIndex++]) & 0xff;
+            return (streamBuffer[sbIndex++]) & 0xff;
 
         sbFilled = super.read(streamBuffer, 0, streamBuffer.length);
         if(sbFilled <= 0)
@@ -99,10 +101,10 @@ public class RLE_CRCInputStream extends FilterInputStream {
 
         sbIndex = 0;
         // Take care to return no sign-extended numbers, hence the & 0xff
-        return ((int)streamBuffer[sbIndex++]) & 0xff;
+        return (streamBuffer[sbIndex++]) & 0xff;
     }
 
-	private int nextDecodedByte() throws IOException
+    private int nextDecodedByte() throws IOException
     {
         // Check if we're still busy expanding a run-length-encoding.
         // No reads are necessary in that case.
@@ -134,8 +136,8 @@ public class RLE_CRCInputStream extends FilterInputStream {
             int c = nextStreamByte();
             if(c == -1)
                 throw new EOFException(
-				        "Corrupted Hqx8 stream, EOF just after a "
-						+ "0x90 RLE char.");
+                        "Corrupted Hqx8 stream, EOF just after a "
+                        + "0x90 RLE char.");
             if(c == 0)
             {
                 // No RLE, just a single 0x90 character
@@ -155,7 +157,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
             updateCRC(lastByte);
             return lastByte;
         }
-		else
+        else
         {
             // Plain old straight data passing through. Do remember this
             // as the lastByte though, because the next character could
@@ -196,7 +198,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
      Returns the CRC calculated over the data that was read since the beginning
      of the stream or since the last call to resetCRC.
      Must only be called after all the data was read in a section, because
-	 the CRC is updated as if two extra 0 bytes were read. This is dictated
+     the CRC is updated as if two extra 0 bytes were read. This is dictated
      by the BinHex4 protocol.
      */
     public int getCRC()
@@ -255,8 +257,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
 
     public static void main(String[] args)
     {
-        try {
-            InputStream in = new RLE_CRCInputStream(System.in);
+        try (InputStream in = new RLE_CRCInputStream(System.in)) {
             byte[] buf = new byte[1024];
 
             System.err.println("Starting to convert");
@@ -268,7 +269,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
                 System.out.write(buf, 0, r);
             }
         } catch(IOException e)
-		{
+        {
             e.printStackTrace();
         }
     }
@@ -287,7 +288,7 @@ public class RLE_CRCInputStream extends FilterInputStream {
 
     /**
      If inRLE is true, then nextDecodedByte will return the byte
-	 <code>lastByte</code> another <code>rleRepeat</code> times.
+     <code>lastByte</code> another <code>rleRepeat</code> times.
      */
     private int     rleRepeat;
 
