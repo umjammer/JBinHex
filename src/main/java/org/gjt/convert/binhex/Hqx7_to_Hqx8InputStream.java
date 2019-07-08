@@ -298,26 +298,6 @@ public class Hqx7_to_Hqx8InputStream extends FilterInputStream {
         return len;
     }
 
-
-    public static void main(String[] args)
-    {
-        try (InputStream in = new Hqx7_to_Hqx8InputStream(System.in)) {
-            byte[] buf = new byte[1024];
-
-            System.err.println("Starting to convert");
-            while(true)
-            {
-                int r = in.read(buf);
-                if(r <= 0)
-                    return;
-                System.out.write(buf, 0, r);
-            }
-        } catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     /**
      A buffer for a maximum of two times six bits.
      */

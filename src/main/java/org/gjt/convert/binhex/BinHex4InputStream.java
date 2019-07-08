@@ -449,27 +449,6 @@ public class BinHex4InputStream extends InputStream {
         return (fl1 << 8) | fl2;
     }
 
-    public static void main(String[] args)
-    {
-        try (BinHex4InputStream in = new BinHex4InputStream(System.in)) {
-            System.err.println(in.getHeader());
-
-            byte[] buf = new byte[1024];
-
-            System.err.println("Starting to convert");
-            while(true)
-            {
-                int r = in.read(buf);
-                if(r <= 0)
-                    return;
-                System.out.write(buf, 0, r);
-            }
-        } catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     /**
      One of three states: before header, in data fork, or in resource fork.
      */
