@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/umjammer/jbinhex.svg)](https://jitpack.io/#umjammer/jbinhex)
+[![](https://jitpack.io/v/umjammer/jbinhex.svg)](https://jitpack.io/#umjammer/jbinhex) [![Parent](https://img.shields.io/badge/Parent-vavi--util--archive-pink)](https://github.com/umjammer/vavi-util-archive)
 
 # JBinHex
 
